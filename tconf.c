@@ -1,0 +1,281 @@
+/*
+ * Copyright (c) 1997-2007  The Stanford SRP Authentication Project
+ * All Rights Reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND, 
+ * EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY 
+ * WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  
+ *
+ * IN NO EVENT SHALL STANFORD BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+ * INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND, OR ANY DAMAGES WHATSOEVER
+ * RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER OR NOT ADVISED OF
+ * THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF LIABILITY, ARISING OUT
+ * OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * Redistributions in source or binary form must retain an intact copy
+ * of this copyright notice.
+ */
+
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>	/* close getlogin */
+#endif /* HAVE_UNISTD_H */
+#include <stdlib.h>	/* atexit exit */
+#include <stdio.h>
+#include <string.h>
+
+#include "srp_aux.h"
+#include "t_pwd.h"
+
+#define MIN_BASIS_BITS 512
+#define MAX_BASIS_BITS 4096
+
+extern int  optind;
+extern char *optarg;
+
+extern int errno;
+
+char *progName;
+
+int  debug   = 0;
+int  verbose = 0;
+int  composite = 0;
+
+void
+print_num(const unsigned char * data, int sz, int radix, int oneline)
+{
+  cstr * buf = cstr_new();
+  BigInteger b = BigIntegerFromBytes(data, sz);
+
+  if(radix >= 10) {
+    cstr_set_length(buf, sz * 2 + 1);
+    BigIntegerToString(b, buf->data, buf->length, radix);
+    if(oneline && strlen(buf->data) > 60) {
+      printf("%.30s ... %.30s", buf->data, buf->data + strlen(buf->data) - 30);
+    }
+    else
+      printf("%s", buf->data);
+  }
+  BigIntegerFree(b);
+  cstr_free(buf);
+}
+
+void
+usage()
+{
+  /* TODO: explain options */
+  fprintf(stderr, "usage: %s [-dvfx2] [-c configfile]\n", progName);
+  exit(1);
+}
+
+int main(argc, argv)
+     int argc;
+     char *argv[];
+{
+  char *chp;
+  char *configFile = NULL;
+  char cbuf[256];
+  int c, ch, i, lastidx, keylen, yesno, fsize, nparams;
+  int radix = 64;
+  int oneline = 1;
+  FILE *efp;
+
+  struct t_preconf * tpc;
+  struct t_conf * tc = NULL;
+  struct t_confent * tcent;
+
+  progName = *argv;
+#ifndef WIN32
+  if ((chp = strrchr(progName, '/')) != (char *) 0) progName = chp + 1;
+#endif
+
+  while ((ch = getopt(argc, argv, "dvfx2c:")) != EOF)
+    switch(ch) {
+    case 'c':
+      configFile = optarg;
+      break;
+    case 'v':
+      verbose++;
+      break;
+    case 'd':
+      debug++;
+      break;
+    case 'x':
+      radix = 16;
+      break;
+    case 'f':
+      oneline = 0;
+      break;
+    case '2':
+      composite++;
+      break;
+    default:
+      usage();
+    }
+
+  argc -= optind;
+  argv += optind;
+
+  if(configFile == NULL)
+     configFile = DEFAULT_CONF;
+
+  efp = fopen(configFile, "a+");
+  if(efp == NULL) {
+    if(creat(configFile, 0644) < 0 || (efp = fopen(configFile, "a+")) == NULL) {
+      perror(configFile);
+      exit(2);
+    }
+    else
+      printf("%s: Creating new configuration file %s\n", progName, configFile);
+  }
+
+  tc = t_openconf(efp);
+  if(tc == NULL) {
+    fprintf(stderr, "%s: unable to open configuration file %s\n",
+	    progName, configFile);
+    exit(2);
+  }
+
+  tcent = t_getconflast(tc);
+  if(tcent == NULL)
+    lastidx = 0;
+  else
+    lastidx = tcent->index;
+
+  if(lastidx > 0) {
+    keylen = 8 * tcent->modulus.len;
+    printf("Current field size is %d bits.\n", keylen);
+    printf("\nIncrease the default field size? [y] ");
+    yesno = 0;
+    while((c = getchar()) != '\n' && c != EOF) {
+      if(yesno == 0) {
+	if(c == 'n' || c == 'N')
+	  yesno = -1;
+	else if(c == 'y' || c == 'Y')
+	  yesno = 1;
+      }
+    }
+    if(c == EOF || yesno < 0)
+      exit(0);
+  }
+  else {
+    lastidx = 0;
+    keylen = 0;
+  }
+
+  tcent = t_newconfent(tc);
+
+  printf("\nThis program will generate a set of parameters for the EPS\n");
+  printf("password file.  The size of these parameters, measured in bits,\n");
+  printf("determines the level of security offered by SRP, and is related\n");
+  printf("to the security of similarly-sized RSA or Diffie-Hellman keys.\n");
+  printf("Choosing a predefined field is generally preferable to generating\n");
+  printf("a new field because clients can avoid costly parameter verification.\n");
+  printf("Either way, the values generated by this program are public and\n");
+  printf("can even shared between systems.\n");
+
+  printf("\nGenerate a (n)ew field or use a (p)redefined field? [nP] ");
+  fgets(cbuf, sizeof(cbuf), stdin);
+  if(*cbuf != 'n' && *cbuf != 'N') {
+    nparams = t_getprecount();
+    for(i = 0; i < nparams; ++i) {
+      tpc = t_getpreparam(i);
+      printf("(%d) [%d bits]  %s\n    Modulus = ",
+	     i + 1, 8 * tpc->modulus.len,
+	     tpc->comment ? tpc->comment : "");
+      print_num(tpc->modulus.data, tpc->modulus.len, radix, oneline);
+      printf("\n  Generator = ");
+      print_num(tpc->generator.data, tpc->generator.len, radix, oneline);
+      printf("\n");
+    }
+    printf("\nSelect a field (1-%d): ", nparams);
+    fgets(cbuf, sizeof(cbuf), stdin);
+    i = atoi(cbuf);
+    if(i <= 0 || i > nparams) {
+      fprintf(stderr, "Index not in range\n");
+      exit(1);
+    }
+    tcent->index = lastidx + 1;
+    tpc = t_getpreparam(i - 1);
+    tcent->modulus.len = tpc->modulus.len;
+    tcent->modulus.data = tpc->modulus.data;
+    tcent->generator.len = tpc->generator.len;
+    tcent->generator.data = tpc->generator.data;
+    t_putconfent(tcent, efp);
+    t_closeconf(tc);
+    fclose(efp);
+    printf("Configuration file updated.\n");
+    exit(0);
+  }
+
+  printf("\nEnter the new field size, in bits.  Suggested sizes:\n\n");
+  printf(" 512 (fast, minimally secure)\n");
+  printf(" 768 (moderate security)\n");
+  printf("1024 (most popular default)\n");
+  printf("1536 (additional security, possibly slow)\n");
+  printf("2048 (maximum supported security level for v1)\n");
+  printf("%d (maximum predefined field length)\n", MAX_BASIS_BITS);
+  printf("\nField size (minimum %d): ", MIN_BASIS_BITS);
+
+  fgets(cbuf, sizeof(cbuf), stdin);
+  fsize = atoi(cbuf);
+  if(fsize < MIN_BASIS_BITS) {
+    fprintf(stderr, "%s: field size must be at least %d bits\n",
+	    progName, MIN_BASIS_BITS);
+    exit(1);
+  }
+
+  if(fsize <= keylen)
+    fprintf(stderr, "Warning: new field size is not larger than old field size\n");
+
+  printf("\nInitializing random number generator...");
+  fflush(stdout);
+  t_stronginitrand();
+
+  if(composite)
+    printf("done.\n\nGenerating a %d-bit composite with safe prime factors.  This may take a while.\n", fsize);
+  else
+    printf("done.\n\nGenerating a %d-bit safe prime.  This may take a while.\n", fsize);
+
+  while(1) {
+    while((tcent = (composite ? t_makeconfent_c(tc, fsize) :
+		                t_makeconfent(tc, fsize))) == NULL)
+      printf("Parameter generation failed, retrying...\n");
+    tcent->index = lastidx + 1;
+
+    printf("\nParameters successfully generated.\n");
+    printf("N = [");
+    print_num(tcent->modulus.data, tcent->modulus.len, radix, 0);
+    printf("]\ng = [");
+    print_num(tcent->generator.data, tcent->generator.len, radix, 0);
+    printf("]\n\nUpdate the configuration file with these parameters? [Ynq] ");
+
+    fgets(cbuf, sizeof(cbuf), stdin);
+    switch(*cbuf) {
+    case 'q':
+    case 'Q':
+      fclose(efp);
+      exit(0);
+    case 'n':
+    case 'N':
+      printf("\nGenerating another set of parameters, please wait...\n");
+      break;
+    default:
+      t_putconfent(tcent, efp);
+      t_closeconf(tc);
+      fclose(efp);
+      printf("Configuration file updated.\n");
+      exit(0);
+    }
+  }
+}

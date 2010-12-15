@@ -1,0 +1,45 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:577: checking for a BSD compatible install
+configure:630: checking whether build environment is sane
+configure:687: checking whether make sets ${MAKE}
+configure:733: checking for working aclocal
+configure:746: checking for working autoconf
+configure:759: checking for working automake
+configure:772: checking for working autoheader
+configure:785: checking for working makeinfo
+configure:805: checking for gcc
+configure:918: checking whether the C compiler (gcc -O ) works
+configure:934: gcc -o conftest -O   conftest.c  1>&5
+configure:960: checking whether the C compiler (gcc -O ) is a cross-compiler
+configure:965: checking whether we are using GNU C
+configure:993: checking whether gcc accepts -g
+configure:1036: checking for a BSD compatible install
+configure:1089: checking whether ln -s works
+configure:1112: checking for ranlib
+configure:1161: checking for socket in -lsocket
+configure:1208: checking for gethostbyname in -lnsl
+configure:1255: checking for dlopen in -ldl
+configure:1304: checking how to run the C preprocessor
+configure:1384: checking for ANSI C header files
+configure:1491: checking for sgtty.h
+configure:1491: checking for sys/ioctl.h
+configure:1491: checking for sys/time.h
+configure:1491: checking for termio.h
+configure:1491: checking for termios.h
+configure:1491: checking for unistd.h
+configure:1530: checking for working const
+configure:1605: checking for inline
+configure:1645: checking whether time.h and sys/time.h may both be included
+configure:1680: checking whether byte ordering is bigendian
+configure:1770: checking size of short
+configure:1809: checking size of int
+configure:1848: checking size of long
+configure:1894: gcc -c -O  conftest.c 1>&5
+configure:1911: checking for sigaction
+configure:1911: checking for strchr
+configure:1911: checking for memcpy
+configure:1964: checking return type of signal handlers
+configure:2006: checking for termios.h
+configure:2033: checking for cfsetispeed

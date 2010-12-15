@@ -1,0 +1,130 @@
+# Microsoft Developer Studio Generated Dependency File, included by srp152.mak
+
+.\cstr.c : \
+	".\config.h"\
+	".\cstr.h"\
+	
+
+.\nsswitch.c : \
+	".\config.h"\
+	".\nsswitch.h"\
+	".\nys_config.h"\
+	
+
+.\nsw_tconf.c : \
+	".\config.h"\
+	".\endXXent.h"\
+	".\getXXbyYY.h"\
+	".\getXXent.h"\
+	".\nss_defs.h"\
+	".\nsswitch.h"\
+	".\nys_config.h"\
+	".\setXXent.h"\
+	".\t_pwd.h"\
+	
+
+.\nsw_tpasswd.c : \
+	".\config.h"\
+	".\endXXent.h"\
+	".\getXXbyYY.h"\
+	".\getXXent.h"\
+	".\nss_defs.h"\
+	".\nsswitch.h"\
+	".\nys_config.h"\
+	".\setXXent.h"\
+	".\t_pwd.h"\
+	
+
+.\t_client.c : \
+	".\config.h"\
+	".\cstr.h"\
+	".\t_client.h"\
+	".\t_defines.h"\
+	".\t_pwd.h"\
+	".\t_sha.h"\
+	
+
+.\t_conf.c : \
+	".\config.h"\
+	".\nys_config.h"\
+	".\t_defines.h"\
+	".\t_pwd.h"\
+	".\t_read.h"\
+	
+
+.\t_conv.c : \
+	".\config.h"\
+	".\t_defines.h"\
+	
+
+.\t_getpass.c : \
+	".\config.h"\
+	".\t_defines.h"\
+	
+
+.\t_math.c : \
+	"$(CRYPTOLIB)\libcrypt.h"\
+	".\config.h"\
+	".\t_defines.h"\
+	".\t_pwd.h"\
+	
+
+.\t_misc.c : \
+	".\config.h"\
+	".\t_defines.h"\
+	".\t_sha.h"\
+	
+
+.\t_pw.c : \
+	".\config.h"\
+	".\nys_config.h"\
+	".\t_defines.h"\
+	".\t_pwd.h"\
+	".\t_read.h"\
+	".\t_sha.h"\
+	
+
+.\t_read.c : \
+	".\config.h"\
+	
+
+.\t_server.c : \
+	".\config.h"\
+	".\cstr.h"\
+	".\t_defines.h"\
+	".\t_pwd.h"\
+	".\t_server.h"\
+	".\t_sha.h"\
+	
+
+.\t_sha.c : \
+	".\config.h"\
+	".\t_defines.h"\
+	".\t_sha.h"\
+	
+
+.\t_truerand.c : \
+	"$(CRYPTOLIB)\libcrypt.h"\
+	".\config.h"\
+	".\t_defines.h"\
+	
+
+.\yp_misc.c : \
+	".\config.h"\
+	".\nys_config.h"\
+	".\yp_misc.h"\
+	
+
+.\yp_tconf.c : \
+	".\config.h"\
+	".\nys_config.h"\
+	".\t_pwd.h"\
+	".\yp_misc.h"\
+	
+
+.\yp_tpasswd.c : \
+	".\config.h"\
+	".\nys_config.h"\
+	".\t_pwd.h"\
+	".\yp_misc.h"\
+	
