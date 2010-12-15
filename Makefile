@@ -17,7 +17,6 @@
 
 
 
-
 pkgdatadir = $(datadir)/libsrp
 pkgincludedir = $(includedir)/libsrp
 pkglibdir = $(libdir)/libsrp
@@ -34,8 +33,6 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-noinst_PROGRAMS = srptest$(EXEEXT) srpbench$(EXEEXT) \
-	srp6bench$(EXEEXT)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(include_HEADERS) \
 	$(noinst_HEADERS) $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -82,23 +79,8 @@ libsrp_a_LIBADD =
 am_libsrp_a_OBJECTS = t_conv.$(OBJEXT) t_conf.$(OBJEXT) \
 	t_sha.$(OBJEXT) t_math.$(OBJEXT) t_misc.$(OBJEXT) \
 	t_read.$(OBJEXT) t_truerand.$(OBJEXT) cstr.$(OBJEXT) \
-	srp.$(OBJEXT) rfc2945_client.$(OBJEXT) \
-	rfc2945_server.$(OBJEXT) srp6_client.$(OBJEXT) \
-	srp6_server.$(OBJEXT)
+	srp6_client.$(OBJEXT) srp6_server.$(OBJEXT)
 libsrp_a_OBJECTS = $(am_libsrp_a_OBJECTS)
-PROGRAMS = $(noinst_PROGRAMS)
-am_srp6bench_OBJECTS = srp6bench.$(OBJEXT)
-srp6bench_OBJECTS = $(am_srp6bench_OBJECTS)
-srp6bench_LDADD = $(LDADD)
-srp6bench_DEPENDENCIES = libsrp.a
-am_srpbench_OBJECTS = srpbench.$(OBJEXT)
-srpbench_OBJECTS = $(am_srpbench_OBJECTS)
-srpbench_LDADD = $(LDADD)
-srpbench_DEPENDENCIES = libsrp.a
-am_srptest_OBJECTS = srptest.$(OBJEXT)
-srptest_OBJECTS = $(am_srptest_OBJECTS)
-srptest_LDADD = $(LDADD)
-srptest_DEPENDENCIES = libsrp.a
 DEFAULT_INCLUDES = -I.
 depcomp =
 am__depfiles_maybe =
@@ -106,10 +88,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libsrp_a_SOURCES) $(srp6bench_SOURCES) $(srpbench_SOURCES) \
-	$(srptest_SOURCES)
-DIST_SOURCES = $(libsrp_a_SOURCES) $(srp6bench_SOURCES) \
-	$(srpbench_SOURCES) $(srptest_SOURCES)
+SOURCES = $(libsrp_a_SOURCES)
+DIST_SOURCES = $(libsrp_a_SOURCES)
 HEADERS = $(include_HEADERS) $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -221,13 +201,9 @@ noinst_HEADERS = t_defines.h t_read.h
 lib_LIBRARIES = libsrp.a
 libsrp_a_SOURCES = \
   t_conv.c t_conf.c t_sha.c t_math.c t_misc.c \
-  t_read.c t_truerand.c cstr.c \
-  srp.c rfc2945_client.c rfc2945_server.c srp6_client.c srp6_server.c 
+  t_read.c t_truerand.c cstr.c srp6_client.c srp6_server.c 
 
 AM_CFLAGS = -fPIC
-srptest_SOURCES = srptest.c
-srpbench_SOURCES = srpbench.c
-srp6bench_SOURCES = srp6bench.c
 LDADD = libsrp.a
 INCLUDES = 
 all: config.h
@@ -322,18 +298,6 @@ libsrp.a: $(libsrp_a_OBJECTS) $(libsrp_a_DEPENDENCIES)
 	-rm -f libsrp.a
 	$(libsrp_a_AR) libsrp.a $(libsrp_a_OBJECTS) $(libsrp_a_LIBADD)
 	$(RANLIB) libsrp.a
-
-clean-noinstPROGRAMS:
-	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
-srp6bench$(EXEEXT): $(srp6bench_OBJECTS) $(srp6bench_DEPENDENCIES) 
-	@rm -f srp6bench$(EXEEXT)
-	$(LINK) $(srp6bench_OBJECTS) $(srp6bench_LDADD) $(LIBS)
-srpbench$(EXEEXT): $(srpbench_OBJECTS) $(srpbench_DEPENDENCIES) 
-	@rm -f srpbench$(EXEEXT)
-	$(LINK) $(srpbench_OBJECTS) $(srpbench_LDADD) $(LIBS)
-srptest$(EXEEXT): $(srptest_OBJECTS) $(srptest_DEPENDENCIES) 
-	@rm -f srptest$(EXEEXT)
-	$(LINK) $(srptest_OBJECTS) $(srptest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -568,7 +532,7 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(HEADERS) config.h
+all-am: Makefile $(LIBRARIES) $(HEADERS) config.h
 installdirs:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -600,8 +564,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libLIBRARIES clean-noinstPROGRAMS \
-	mostlyclean-am
+clean-am: clean-generic clean-libLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -672,21 +635,21 @@ uninstall-am: uninstall-includeHEADERS uninstall-libLIBRARIES
 .MAKE: all install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am am--refresh check check-am clean \
-	clean-generic clean-libLIBRARIES clean-noinstPROGRAMS ctags \
-	dist dist-all dist-bzip2 dist-gzip dist-lzma dist-shar \
-	dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-compile distclean-generic distclean-hdr \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-includeHEADERS install-info install-info-am \
-	install-libLIBRARIES install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-includeHEADERS uninstall-libLIBRARIES
+	clean-generic clean-libLIBRARIES ctags dist dist-all \
+	dist-bzip2 dist-gzip dist-lzma dist-shar dist-tarZ dist-xz \
+	dist-zip distcheck distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-tags distcleancheck \
+	distdir distuninstallcheck dvi dvi-am html html-am info \
+	info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-includeHEADERS \
+	install-info install-info-am install-libLIBRARIES install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-includeHEADERS \
+	uninstall-libLIBRARIES
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

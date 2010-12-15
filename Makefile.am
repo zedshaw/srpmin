@@ -10,16 +10,9 @@ lib_LIBRARIES = libsrp.a
 
 libsrp_a_SOURCES = \
   t_conv.c t_conf.c t_sha.c t_math.c t_misc.c \
-  t_read.c t_truerand.c cstr.c \
-  srp.c rfc2945_client.c rfc2945_server.c srp6_client.c srp6_server.c 
+  t_read.c t_truerand.c cstr.c srp6_client.c srp6_server.c 
 
 AM_CFLAGS = @PICFLAG@
-
-noinst_PROGRAMS = srptest srpbench srp6bench
-
-srptest_SOURCES = srptest.c
-srpbench_SOURCES = srpbench.c
-srp6bench_SOURCES = srp6bench.c
 
 LDADD = libsrp.a
 
