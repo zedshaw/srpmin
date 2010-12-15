@@ -34,8 +34,19 @@
 #include <sys/time.h>
 #endif
 
+#include <stdlib.h>
+#include <assert.h>
+
 #include "t_pwd.h"
 #include "srp.h"
+
+struct t_pwent {       /* A single password file entry */
+  char * name;
+  struct t_num password;
+  struct t_num salt;
+  int index;
+};
+
 
 int
 do_srp6(struct t_confent * pce, struct t_pwent * ppwe,
@@ -153,8 +164,7 @@ do_srp6param(struct t_confent * pce, int iterations)
   unsigned long elapsedus;
 #endif
 
-  tpw = t_newpw();
-  ppwe = t_makepwent(tpw, user, pass, NULL, pce);
+  assert(0 && "Need to redo the pwent stuff here.");
 
 #ifdef WIN32
   ftime(&before);

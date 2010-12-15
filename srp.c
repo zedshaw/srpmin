@@ -328,18 +328,6 @@ slu_nop(SRP_SERVER_LOOKUP * slu)
 static SRP_RESULT
 slu_sys_lookup(SRP_SERVER_LOOKUP * slu, SRP * srp, cstr * username)
 {
-  struct t_passwd * p;
-
-  p = gettpnam(username->data);
-  if(p == NULL)
-    return SRP_ERROR;
-  if(!SRP_OK(SRP_set_params(srp, p->tc.modulus.data, p->tc.modulus.len,
-			    p->tc.generator.data, p->tc.generator.len,
-			    p->tp.salt.data, p->tp.salt.len)))
-    return SRP_ERROR;
-  if(!SRP_OK(SRP_set_authenticator(srp,
-				   p->tp.password.data, p->tp.password.len)))
-    return SRP_ERROR;
 
   return SRP_SUCCESS;
 }
@@ -382,39 +370,6 @@ SRP_CLIENT_builtin_param_verify_cb(SRP * srp, const unsigned char * mod, int mod
   return SRP_ERROR;
 }
 
-_TYPE( SRP_RESULT )
-SRP_CLIENT_compat_param_verify_cb(SRP * srp, const unsigned char * mod, int modlen, const unsigned char * gen, int genlen)
-{
-  SRP_RESULT rc;
-  BigInteger q, r;
-
-  rc = SRP_CLIENT_builtin_param_verify_cb(srp, mod, modlen, gen, genlen);
-  if(SRP_OK(rc))
-    return rc;
-
-  /* Now do a safe-primality and generator test */
-  if(!t_isprime(srp->modulus))
-    return SRP_ERROR;
-
-  rc = SRP_ERROR;
-  /* q = (n-1)/2 */
-  q = BigIntegerFromInt(0);
-  BigIntegerSubInt(q, srp->modulus, 1);
-  BigIntegerDivInt(q, q, 2, srp->bctx);
-  if(t_isprime(q) && BigIntegerCmp(srp->modulus, srp->generator) > 0) {
-    r = BigIntegerFromInt(0);		/* Check g^q == -1 (mod n) */
-    BigIntegerModExp(r, srp->generator, q, srp->modulus, srp->bctx, srp->accel);
-    BigIntegerAddInt(r, r, 1);
-    if(BigIntegerCmp(r, srp->modulus) == 0) {
-      BigIntegerAddInt(r, srp->generator, 1);
-      if(BigIntegerCmp(r, srp->modulus) != 0)
-	rc = SRP_SUCCESS;
-    }
-    BigIntegerFree(r);
-  }
-  BigIntegerFree(q);
-  return rc;
-}
 
 _TYPE( SRP_RESULT )
 SRP_CLIENT_default_param_verify_cb(SRP * srp, const unsigned char * mod, int modlen, const unsigned char * gen, int genlen)

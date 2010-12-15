@@ -16,13 +16,9 @@ static cstr_allocator * default_alloc = NULL;
  * are in proper form.  If extra arguments to malloc() and free() cause
  * problems, define PEDANTIC_ARGS below.
  */
-#ifdef PEDANTIC_ARGS
 static void * Cmalloc(int n, void * heap) { return malloc(n); }
 static void Cfree(void * p, void * heap) { free(p); }
 static cstr_allocator malloc_allocator = { Cmalloc, Cfree, NULL };
-#else
-static cstr_allocator malloc_allocator = { malloc, free, NULL };
-#endif
 
 _TYPE( void )
 cstr_set_allocator(cstr_allocator * alloc)
