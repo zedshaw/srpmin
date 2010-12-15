@@ -40,12 +40,6 @@
 #include "t_pwd.h"
 #include "srp.h"
 
-struct t_pwent {       /* A single password file entry */
-  char * name;
-  struct t_num password;
-  struct t_num salt;
-  int index;
-};
 
 
 int
@@ -164,7 +158,8 @@ do_srp6param(struct t_confent * pce, int iterations)
   unsigned long elapsedus;
 #endif
 
-  assert(0 && "Need to redo the pwent stuff here.");
+  tpw = t_newpw();
+  ppwe = t_makepwent(tpw, user, pass, NULL, pce);
 
 #ifdef WIN32
   ftime(&before);

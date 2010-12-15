@@ -121,11 +121,27 @@ _TYPE( int ) t_cmpconfent P((const struct t_confent *, const struct t_confent *)
 _TYPE( int ) t_checkconfent P((const struct t_confent *));
 _TYPE( void ) t_putconfent P((const struct t_confent *, FILE *));
 
-/* libc-style system conf file access */
-_TYPE( struct t_confent *) gettcent();
-_TYPE( struct t_confent *) gettcid P((int));
-_TYPE( void ) settcent();
-_TYPE( void ) endtcent();
+/* Minimal password creation. */
+
+struct t_pwent {	/* A single password file entry */
+  char * name;
+  struct t_num password;
+  struct t_num salt;
+  int index;
+};
+
+struct t_pw {		/* An open password file */
+  char userbuf[MAXUSERLEN];
+  cstr * pwbuf;
+  unsigned char saltbuf[SALTLEN];
+  struct t_pwent pebuf;
+};
+
+_TYPE( struct t_pw * ) t_newpw();
+_TYPE( struct t_pwent * ) t_makepwent P((struct t_pw *, const char *,
+					 const char *, const struct t_num *,
+					 const struct t_confent *));
+_TYPE( void ) t_closepw P((struct t_pw *));
 
 /* Conversion utilities */
 

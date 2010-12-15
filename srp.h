@@ -54,6 +54,7 @@ typedef struct srp_st SRP;
 typedef int (_CDECL * SRP_SECRET_BITS_CB)(int modsize);
 _TYPE( SRP_RESULT ) SRP_set_secret_bits_cb P((SRP_SECRET_BITS_CB cb));
 
+
 /*
  * Client Parameter Verification API
  *
@@ -145,6 +146,14 @@ struct srp_st {
   SRP_CLIENT_PARAM_VERIFY_CB param_cb;	/* to verify params */
 };
 
+/*
+ * SRP_new() creates a new SRP context object -
+ * the method determines which "sense" (client or server)
+ * the object operates in.  SRP_free() frees it.
+ * (See RFC2945 method definitions below.)
+ */
+_TYPE( SRP * )      SRP_new P((SRP_METHOD * meth));
+_TYPE( SRP_RESULT ) SRP_free P((SRP * srp));
 
 /* RFC2945-style SRP authentication */
 

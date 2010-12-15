@@ -80,8 +80,9 @@ libsrp_a_AR = $(AR) $(ARFLAGS)
 libsrp_a_LIBADD =
 am_libsrp_a_OBJECTS = t_conv.$(OBJEXT) t_conf.$(OBJEXT) \
 	t_sha.$(OBJEXT) t_math.$(OBJEXT) t_misc.$(OBJEXT) \
-	t_read.$(OBJEXT) t_truerand.$(OBJEXT) cstr.$(OBJEXT) \
-	srp.$(OBJEXT) srp6_client.$(OBJEXT) srp6_server.$(OBJEXT)
+	t_pw.$(OBJEXT) t_read.$(OBJEXT) t_truerand.$(OBJEXT) \
+	cstr.$(OBJEXT) srp.$(OBJEXT) srp6_client.$(OBJEXT) \
+	srp6_server.$(OBJEXT)
 libsrp_a_OBJECTS = $(am_libsrp_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 am_srp6bench_OBJECTS = srp6bench.$(OBJEXT)
@@ -207,7 +208,7 @@ include_HEADERS = srp.h srp_aux.h t_pwd.h t_sha.h cstr.h
 noinst_HEADERS = t_defines.h t_read.h  
 lib_LIBRARIES = libsrp.a
 libsrp_a_SOURCES = \
-  t_conv.c t_conf.c t_sha.c t_math.c t_misc.c \
+  t_conv.c t_conf.c t_sha.c t_math.c t_misc.c t_pw.c \
   t_read.c t_truerand.c cstr.c srp.c srp6_client.c srp6_server.c 
 
 srp6bench_SOURCES = srp6bench.c
