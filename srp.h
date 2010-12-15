@@ -49,6 +49,11 @@ typedef int SRP_RESULT;
 
 typedef struct srp_st SRP;
 
+#define SRP_DEFAULT_MIN_BITS 512
+
+typedef int (_CDECL * SRP_SECRET_BITS_CB)(int modsize);
+_TYPE( SRP_RESULT ) SRP_set_secret_bits_cb P((SRP_SECRET_BITS_CB cb));
+
 /*
  * Client Parameter Verification API
  *

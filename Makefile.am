@@ -8,12 +8,15 @@ noinst_HEADERS = t_defines.h t_read.h
 
 lib_LIBRARIES = libsrp.a
 
+noinst_PROGRAMS = srp6bench
+
 libsrp_a_SOURCES = \
   t_conv.c t_conf.c t_sha.c t_math.c t_misc.c \
-  t_read.c t_truerand.c cstr.c srp6_client.c srp6_server.c 
+  t_read.c t_truerand.c cstr.c srp.c srp6_client.c srp6_server.c 
+
+srp6bench_SOURCES = srp6bench.c
 
 AM_CFLAGS = @PICFLAG@
 
 LDADD = libsrp.a
 
-INCLUDES =
