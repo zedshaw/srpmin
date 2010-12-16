@@ -34,7 +34,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-noinst_PROGRAMS = srp6bench$(EXEEXT)
+noinst_PROGRAMS = srp6bench$(EXEEXT) simple_test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(include_HEADERS) \
 	$(noinst_HEADERS) $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
@@ -82,9 +82,13 @@ am_libsrp_a_OBJECTS = t_conv.$(OBJEXT) t_conf.$(OBJEXT) \
 	t_sha.$(OBJEXT) t_math.$(OBJEXT) t_misc.$(OBJEXT) \
 	t_pw.$(OBJEXT) t_read.$(OBJEXT) t_truerand.$(OBJEXT) \
 	cstr.$(OBJEXT) srp.$(OBJEXT) srp6_client.$(OBJEXT) \
-	srp6_server.$(OBJEXT)
+	srp6_server.$(OBJEXT) srp_simple.$(OBJEXT)
 libsrp_a_OBJECTS = $(am_libsrp_a_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
+simple_test_SOURCES = simple_test.c
+simple_test_OBJECTS = simple_test.$(OBJEXT)
+simple_test_LDADD = $(LDADD)
+simple_test_DEPENDENCIES = libsrp.a
 am_srp6bench_OBJECTS = srp6bench.$(OBJEXT)
 srp6bench_OBJECTS = $(am_srp6bench_OBJECTS)
 srp6bench_LDADD = $(LDADD)
@@ -96,8 +100,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libsrp_a_SOURCES) $(srp6bench_SOURCES)
-DIST_SOURCES = $(libsrp_a_SOURCES) $(srp6bench_SOURCES)
+SOURCES = $(libsrp_a_SOURCES) simple_test.c $(srp6bench_SOURCES)
+DIST_SOURCES = $(libsrp_a_SOURCES) simple_test.c $(srp6bench_SOURCES)
 HEADERS = $(include_HEADERS) $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -204,12 +208,12 @@ top_builddir = .
 top_srcdir = .
 AUTOMAKE_OPTIONS = foreign no-dependencies
 EXTRA_DIST = README.API README.math README.speed NTconfig.h makefile.win32 makefile.win32.dep config.h.win32
-include_HEADERS = srp.h srp_aux.h t_pwd.h t_sha.h cstr.h
+include_HEADERS = srp.h srp_aux.h t_pwd.h t_sha.h cstr.h srp_simple.h
 noinst_HEADERS = t_defines.h t_read.h  
 lib_LIBRARIES = libsrp.a
 libsrp_a_SOURCES = \
   t_conv.c t_conf.c t_sha.c t_math.c t_misc.c t_pw.c \
-  t_read.c t_truerand.c cstr.c srp.c srp6_client.c srp6_server.c 
+  t_read.c t_truerand.c cstr.c srp.c srp6_client.c srp6_server.c srp_simple.c
 
 srp6bench_SOURCES = srp6bench.c
 AM_CFLAGS = -fPIC
@@ -309,6 +313,9 @@ libsrp.a: $(libsrp_a_OBJECTS) $(libsrp_a_DEPENDENCIES)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
+simple_test$(EXEEXT): $(simple_test_OBJECTS) $(simple_test_DEPENDENCIES) 
+	@rm -f simple_test$(EXEEXT)
+	$(LINK) $(simple_test_OBJECTS) $(simple_test_LDADD) $(LIBS)
 srp6bench$(EXEEXT): $(srp6bench_OBJECTS) $(srp6bench_DEPENDENCIES) 
 	@rm -f srp6bench$(EXEEXT)
 	$(LINK) $(srp6bench_OBJECTS) $(srp6bench_LDADD) $(LIBS)

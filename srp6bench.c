@@ -49,12 +49,12 @@ do_srp6(struct t_confent * pce, struct t_pwent * ppwe,
   SRP_RESULT rc;
   SRP * srps;
   SRP * srpc;
-  cstr * t1;
-  cstr * t2;
+  cstr * client_pub;
+  cstr * server_pub;
   cstr * ks;
   cstr * kc;
 
-  t1 = NULL;
+  client_pub = NULL;
 
   srps = SRP_new(SRP6a_server_method());
   if(!SRP_OK(SRP_set_username(srps, user))) {
@@ -84,18 +84,18 @@ do_srp6(struct t_confent * pce, struct t_pwent * ppwe,
     printf("SRP_set_params failed\n");
     return -1;
   }
-  if(!SRP_OK(SRP_gen_pub(srpc, &t1))) {
+  if(!SRP_OK(SRP_gen_pub(srpc, &client_pub))) {
     printf("SRP_gen_pub failed\n");
     return -1;
   }
 
-  t2 = NULL;
-  if(!SRP_OK(SRP_gen_pub(srps, &t2))) {
+  server_pub = NULL;
+  if(!SRP_OK(SRP_gen_pub(srps, &server_pub))) {
     printf("SRP_gen_pub failed\n");
     return -1;
   }
   ks = NULL;
-  if(!SRP_OK(SRP_compute_key(srps, &ks, t1->data, t1->length))) {
+  if(!SRP_OK(SRP_compute_key(srps, &ks, client_pub->data, client_pub->length))) {
     printf("SRP_compute_key failed\n");
     return -1;
   }
@@ -105,7 +105,7 @@ do_srp6(struct t_confent * pce, struct t_pwent * ppwe,
     return -1;
   }
   kc = NULL;
-  if(!SRP_OK(SRP_compute_key(srpc, &kc, t2->data, t2->length))) {
+  if(!SRP_OK(SRP_compute_key(srpc, &kc, server_pub->data, server_pub->length))) {
     printf("SRP_compute_key failed\n");
     return -1;
   }
@@ -133,8 +133,8 @@ do_srp6(struct t_confent * pce, struct t_pwent * ppwe,
   }
   SRP_free(srpc);
   SRP_free(srps);
-  cstr_free(t1);
-  cstr_free(t2);
+  cstr_free(client_pub);
+  cstr_free(server_pub);
   cstr_free(kc);
   cstr_free(ks);
 
@@ -228,9 +228,9 @@ usage()
 
 /* Number of iterations to run for each bit length.
  * Should be balanced so that each one takes equally long. */
-#define ITERATIONS_1024 360
-#define ITERATIONS_2048 120
-#define ITERATIONS_4096 40
+#define ITERATIONS_1024 360 * 2
+#define ITERATIONS_2048 120 * 2
+#define ITERATIONS_4096 40 * 2
 
 #define ITERATIONS_GENERIC 50
 
