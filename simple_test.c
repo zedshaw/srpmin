@@ -1,4 +1,5 @@
 #include "srp_simple.h"
+#include "dbg.h"
 
 FILE *LOG_FILE = NULL;
 
@@ -31,16 +32,19 @@ void main(int argc, char *argv[])
     // STEP 1: setup the server's public key for the client using params, hashed password, and username from client
     cstr *server_pub = ssrp_server_start(server, MODULUS, GENERATOR, salt, password, user);
     check(server_pub != NULL, "Failed to get server public key.");
+    debug("SERVER PUB LEN: %d", server_pub->length);
 
     // S->C: modulus, generator, salt, server_pub
 
     // STEP 2: client calcs public key based on params and username
     cstr *client_pub = ssrp_client_start(client, MODULUS, GENERATOR, salt, user);
     check(client_pub != NULL, "Failed to get client public key.");
+    debug("CLIENT PUB LEN: %d", client_pub->length);
 
     // STEP 3: client uses server_pub key and locally known real user pass to generate its proof
     cstr *client_proof = ssrp_client_respond(client, server_pub, user_pass);
     check(client_proof != NULL, "Failed to make client proof.");
+    debug("CLIENT PROOF LEN: %d", client_proof->length);
 
 
     // C->S: client_proof, client_pub

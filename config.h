@@ -14,7 +14,7 @@
 
 /* #undef CRYPTOLIB */
 
-#define OPENSSL_ENGINE 1
+/* #undef OPENSSL_ENGINE */
 
 /* #undef ENABLE_YP */
 

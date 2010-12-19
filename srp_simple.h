@@ -4,7 +4,6 @@
 #include <t_pwd.h>
 #include <srp.h>
 #include <assert.h>
-#include "dbg.h"
 
 #define PREPARAM_1024 4
 #define PREPARAM_2048 8

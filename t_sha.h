@@ -9,16 +9,16 @@
 #endif
 #endif
 
-#define SHA_DIGESTSIZE 20
+#define SHA_DIGESTSIZE (256 / 8)
 
 #ifdef OPENSSL
-#define OPENSSL_SHA 1
+#define OPENSSL_SHA 256
 #endif
 
 #ifdef TOMCRYPT
 # include <tomcrypt.h>
 # ifdef SHA1
-#  define TOMCRYPT_SHA 1
+#  define TOMCRYPT_SHA 256
 # endif
 #endif
 
@@ -30,16 +30,16 @@
 #endif
 
 #ifdef GCRYPT
-# define GCRYPT_SHA 1
+# define GCRYPT_SHA 256
 #endif
 
 #ifdef OPENSSL_SHA
 #include <openssl/sha.h>
 
-typedef SHA_CTX SHA1_CTX;
-#define SHA1Init SHA1_Init
-#define SHA1Update SHA1_Update
-#define SHA1Final SHA1_Final
+typedef SHA256_CTX SHA1_CTX;
+#define SHA1Init SHA256_Init
+#define SHA1Update SHA256_Update
+#define SHA1Final SHA256_Final
 #elif defined(TOMCRYPT_SHA)
 /* mycrypt.h already included above */
 
@@ -61,7 +61,7 @@ typedef SHS_CTX SHA1_CTX;
 #define SHA1Update shsUpdate
 #define SHA1Final shsFinalBytes
 
-void shsFinalBytes P((unsigned char digest[20], SHS_CTX* context));
+void shsFinalBytes P((unsigned char digest[SHA_DIGESTSIZE], SHS_CTX* context));
 #else
 typedef unsigned int uint32;
 
@@ -73,7 +73,7 @@ typedef struct {
 
 void SHA1Init P((SHA1_CTX* context));
 void SHA1Update P((SHA1_CTX* context, const unsigned char* data, unsigned int len));
-void SHA1Final P((unsigned char digest[20], SHA1_CTX* context));
+void SHA1Final P((unsigned char digest[SHA_DIGESTSIZE], SHA1_CTX* context));
 #endif /* !OPENSSL && !CRYPTOLIB */
 
 #endif /* T_SHA_H */

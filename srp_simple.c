@@ -1,4 +1,5 @@
 #include "srp_simple.h"
+#include "dbg.h"
 
 struct t_confent CONFIG;
 

@@ -184,7 +184,7 @@ static struct {
   short ppid;
   unsigned char envh[SHA_DIGESTSIZE];
   unsigned char fsh[SHA_DIGESTSIZE];
-  unsigned char devrand[20];
+  unsigned char devrand[SHA_DIGESTSIZE];
   unsigned int trand2;
 } preseed;
 
@@ -314,7 +314,7 @@ t_stronginitrand()
  *         A[i] = SHA-1(S[i])
  *
  * where the A[i] are the output blocks starting with i=0.
- * Each cycle generates 20 bytes of new output.
+ * Each cycle generates SHA_DIGESTSIZE bytes of new output.
  */
 _TYPE( void )
 t_random(data, size)
