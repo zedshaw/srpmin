@@ -109,18 +109,10 @@ t_makepwent(tpw, user, pass, salt, confent)
   SHA1Update(&ctxt, pass, strlen(pass));
   SHA1Final(dig, &ctxt);
 
-  printf("USER: %s, PASS: %s, FIRST: ", user, pass);
-  for(i = 0; i < SHA_DIGESTSIZE; i++) printf("%x", dig[i]);
-  printf("\n");
-
   SHA1Init(&ctxt);
   SHA1Update(&ctxt, tpw->pebuf.salt.data, tpw->pebuf.salt.len);
   SHA1Update(&ctxt, dig, sizeof(dig));
   SHA1Final(dig, &ctxt);
-
-  printf("SALT: %d,%x AFTER: ", tpw->pebuf.salt.len, tpw->pebuf.salt.data);
-  for(i = 0; i < SHA_DIGESTSIZE; i++) printf("%x", dig[i]);
-  printf("\n");
 
   /* x = H(s, H(u, ':', p)) */
   x = BigIntegerFromBytes(dig, sizeof(dig));
