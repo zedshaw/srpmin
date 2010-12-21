@@ -81,7 +81,7 @@ t_tohex(dst, src, size)
      const char * src;
      unsigned size;
 {
-   int notleading = 0;
+   int notleading = 1; // canonicalize to always have leading
 
    register char *chp = dst;
    *dst = '\0';
