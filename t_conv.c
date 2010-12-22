@@ -88,11 +88,11 @@ t_tohex(dst, src, size)
    if (size != 0) do {
       if(notleading || *src != '\0') {
 	if(!notleading && (*src & 0xf0) == 0) {
-	  sprintf(chp, "%.1X", * (unsigned char *) src);
+	  sprintf(chp, "%.1x", * (unsigned char *) src);
 	  chp += 1;
 	}
 	else {
-	  sprintf(chp, "%.2X", * (unsigned char *) src);
+	  sprintf(chp, "%.2x", * (unsigned char *) src);
 	  chp += 2;
 	}
 	notleading = 1;
