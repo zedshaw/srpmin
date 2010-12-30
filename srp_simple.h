@@ -33,6 +33,8 @@ cstr *ssrp_client_respond(SRP *srpc, cstr *server_pub, const char *pass);
 
 int ssrp_client_verify(SRP *srpc, cstr *server_proof);
 
+int ssrp_client_auth(SRP *srpc, const char *pass, int len);
+
 
 int ssrp_make_pass(const char *username, const char *password, struct t_num *salt,
         cstr **out_pass, cstr **out_salt);

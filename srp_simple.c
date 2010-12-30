@@ -121,6 +121,10 @@ error:
     return NULL;
 }
 
+int ssrp_client_auth(SRP *srpc, const char *pass, int len)
+{
+    return SRP_set_authenticator(srpc, pass, len);
+}
 
 cstr *ssrp_client_respond(SRP *srpc, cstr *server_pub, const char *pass)
 {
